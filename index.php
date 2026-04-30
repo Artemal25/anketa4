@@ -26,9 +26,13 @@ function getDB() {
     return $pdo;
 }
 
+
 $allowed_languages = [
     'Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python',
-    'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'
+    'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go','Ruby', 'Swift', 'Kotlin', 'TypeScript', 'Rust',
+     'Dart', 'Elixir', 'Lua', 'R', 'Perl',
+    'C#', 'Julia'
+
 ];
 $allowed_genders = ['male', 'female'];
 
