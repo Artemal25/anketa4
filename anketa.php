@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анкета | Лабораторная работа №4</title>
-    <!-- Фавикон -->
     <link rel="icon" type="image/x-icon" href="j.ico">
-    <!-- можно также использовать PNG -->
-    <!-- <link rel="icon" type="image/png" href="favicon.png"> -->
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
@@ -22,13 +19,11 @@
 <div class="container">
     <div class="site-header">
         <div class="header-left">
-            <!-- Круглое фото -->
             <img src="image.jpg" alt="User photo" class="profile-photo">
             <h1>Анкета</h1>
         </div>
         <div class="nav-links">
             <a href="index.php">Главная</a>
-            <a href="podg.html">Этапы</a>
             <a href="v.php">Просмотр анкет</a>
         </div>
     </div>
@@ -123,7 +118,7 @@
     </form>
 
     <div class="site-footer">
-        <p>&copy; 2026 Учебный проект | Все права защищены</p>
+        <p>ЛАБОРАТОРНАЯ РАБОТА №4</p>
     </div>
 </div>
 
@@ -169,7 +164,7 @@
         },
     });
 
-    // Конфетти при успешной отправке
+    
     window.addEventListener('load', function() {
         if (document.querySelector('.success-message')) {
             canvasConfetti({

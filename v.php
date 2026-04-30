@@ -42,7 +42,7 @@ try {
         <h1>Сохранённые анкеты</h1>
         <div class="nav-links">
             <a href="index.php">Форма</a>
-            <a href="podg.html">Этапы</a>
+            
         </div>
     </div>
 
@@ -74,7 +74,7 @@ try {
     </div>
 
     <div class="site-footer">
-        <p>&copy; 2026 Учебный проект</p>
+        <p>ЛАБОРАТОРНАЯ РАБОТА №4</p>
     </div>
 </div>
 </body>
