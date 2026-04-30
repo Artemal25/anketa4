@@ -1,37 +1,38 @@
 <?php
 header('Content-Type: text/html; charset=UTF-8');
+session_start();
 
-// Функция для подключения к БД
+// CSRF токен
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Подключение к БД
 function getDB() {
     static $pdo = null;
     if ($pdo === null) {
         $db_host = 'localhost';
         $db_user = 'u82325';
-        $db_pass = '2941524';   
+        $db_pass = '2941524';
         $db_name = 'u82325';
         try {
             $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            // Скрываем детали ошибки, логируем
-            error_log("DB error: " . $e->getMessage());
+            error_log($e->getMessage());
             die("Внутренняя ошибка сервера. Попробуйте позже.");
         }
     }
     return $pdo;
 }
 
-// Массив допустимых языков и пола
 $allowed_languages = [
     'Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python',
-    'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go','Ruby', 'Swift', 'Kotlin', 'TypeScript', 'Rust',
-     'Dart', 'Elixir', 'Lua', 'R', 'Perl',
-    'C#', 'Julia'
-
+    'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'
 ];
 $allowed_genders = ['male', 'female'];
 
-// Обработка GET-запроса (отображение формы)
+// GET – отображение формы
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $messages = [];
     $errors = [];
@@ -39,21 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $fields = ['full_name', 'phone', 'email', 'birth_date', 'gender', 'biography', 'contract_accepted', 'languages'];
 
-    // Проверяем cookies ошибок
     foreach ($fields as $field) {
         $errors[$field] = !empty($_COOKIE[$field . '_error']);
     }
-    // Сообщения об ошибках (без HTML-тегов)
-    if ($errors['full_name']) $messages[] = 'ФИО должно содержать только буквы и пробелы (макс. 150 символов).';
-    if ($errors['phone']) $messages[] = 'Телефон должен содержать от 6 до 12 цифр, допускаются символы +, -, (, ), пробел.';
-    if ($errors['email']) $messages[] = 'Введите корректный email.';
-    if ($errors['birth_date']) $messages[] = 'Дата рождения должна быть в формате ГГГГ-ММ-ДД и не позже сегодняшнего дня.';
-    if ($errors['gender']) $messages[] = 'Выберите пол.';
-    if ($errors['biography']) $messages[] = 'Биография не должна превышать 10000 символов.';
-    if ($errors['contract_accepted']) $messages[] = 'Необходимо подтвердить согласие.';
-    if ($errors['languages']) $messages[] = 'Выберите хотя бы один язык программирования из списка.';
 
-    // Значения из cookies
+    if ($errors['full_name']) $messages[] = '<div class="error-message">ФИО должно содержать только буквы и пробелы (макс. 150 символов).</div>';
+    if ($errors['phone']) $messages[] = '<div class="error-message">Телефон: 6–12 цифр, разрешены +, -, (, ), пробел.</div>';
+    if ($errors['email']) $messages[] = '<div class="error-message">Введите корректный email.</div>';
+    if ($errors['birth_date']) $messages[] = '<div class="error-message">Дата рождения: формат ГГГГ-ММ-ДД, не позже сегодня.</div>';
+    if ($errors['gender']) $messages[] = '<div class="error-message">Выберите пол.</div>';
+    if ($errors['biography']) $messages[] = '<div class="error-message">Биография не более 10000 символов.</div>';
+    if ($errors['contract_accepted']) $messages[] = '<div class="error-message">Подтвердите согласие.</div>';
+    if ($errors['languages']) $messages[] = '<div class="error-message">Выберите хотя бы один язык.</div>';
+
     foreach ($fields as $field) {
         $values[$field] = empty($_COOKIE[$field . '_value']) ? '' : $_COOKIE[$field . '_value'];
     }
@@ -64,29 +63,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
     $values['contract_accepted'] = !empty($_COOKIE['contract_accepted_value']) ? true : false;
 
-    // Сообщение об успешном сохранении
     if (!empty($_COOKIE['save'])) {
         setcookie('save', '', 1);
-        $messages[] = 'Данные успешно сохранены!';
+        $messages[] = '<div class="success-message">✅ Данные успешно сохранены!</div>';
     }
 
-    // Получаем список языков из БД
     $pdo = getDB();
-    $languages_from_db = [];
-    $stmt = $pdo->query("SELECT name FROM language ORDER BY name");
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $languages_from_db[] = $row['name'];
-    }
-    if (empty($languages_from_db)) {
-        $languages_from_db = $allowed_languages;
-    }
+    $languages_from_db = $pdo->query("SELECT name FROM language ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+    if (empty($languages_from_db)) $languages_from_db = $allowed_languages;
 
     include 'anketa.php';
     exit();
 }
 
-// Обработка POST-запроса (отправка формы)
+// POST – обработка отправки
 else {
+    // CSRF проверка
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Ошибка CSRF. Обновите страницу.');
+    }
+
     $full_name = trim($_POST['full_name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -98,25 +94,28 @@ else {
 
     $errors = false;
 
-    // Валидация
+    // ФИО
     if (empty($full_name) || !preg_match('/^[а-яА-Яa-zA-Z\s]+$/u', $full_name) || strlen($full_name) > 150) {
         setcookie('full_name_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('full_name_value', $full_name, time() + 2592000);
 
+    // Телефон
     if (empty($phone) || !preg_match('/^[\d\s\-\+\(\)]{6,12}$/', $phone)) {
         setcookie('phone_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('phone_value', $phone, time() + 2592000);
 
+    // Email
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         setcookie('email_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('email_value', $email, time() + 2592000);
 
+    // Дата рождения
     if (empty($birth_date)) {
         setcookie('birth_date_error', '1', time() + 86400);
         $errors = true;
@@ -129,24 +128,28 @@ else {
     }
     setcookie('birth_date_value', $birth_date, time() + 2592000);
 
+    // Пол
     if (empty($gender) || !in_array($gender, $allowed_genders)) {
         setcookie('gender_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('gender_value', $gender, time() + 2592000);
 
+    // Биография
     if (strlen($biography) > 10000) {
         setcookie('biography_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('biography_value', $biography, time() + 2592000);
 
+    // Чекбокс
     if (!$contract_accepted) {
         setcookie('contract_accepted_error', '1', time() + 86400);
         $errors = true;
     }
     setcookie('contract_accepted_value', $contract_accepted ? '1' : '0', time() + 2592000);
 
+    // Языки
     if (empty($languages)) {
         setcookie('languages_error', '1', time() + 86400);
         $errors = true;
@@ -187,7 +190,7 @@ else {
         ]);
         $application_id = $pdo->lastInsertId();
 
-        // Вставка языков
+        // Языки
         $lang_map = [];
         $stmt = $pdo->query("SELECT id, name FROM language");
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -214,7 +217,6 @@ else {
 
     } catch (Exception $e) {
         $pdo->rollBack();
-        error_log("DB save error: " . $e->getMessage());
         setcookie('db_error', '1', time() + 86400);
         header('Location: index.php');
         exit();
