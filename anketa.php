@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анкета | Лабораторная работа №4</title>
     <link rel="stylesheet" href="style.css">
-    <!-- библиотека canvas-confetti -->
+    <!-- canvas-confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <!-- tsParticles -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
 <body>
 <div class="gradient-bg"></div>
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
 <div class="blob blob3"></div>
+<div class="blob blob4"></div>
 
 <div class="container">
     <div class="site-header">
@@ -82,7 +85,7 @@
 
         <div class="form-group">
             <label>Любимые языки программирования</label>
-            <select name="languages[]" multiple size="6">
+            <select name="languages[]" multiple size="8">
                 <?php foreach ($languages_from_db as $lang): ?>
                     <option value="<?= htmlspecialchars($lang) ?>" <?= in_array($lang, $values['languages'] ?? []) ? 'selected' : '' ?>><?= htmlspecialchars($lang) ?></option>
                 <?php endforeach; ?>
@@ -119,16 +122,48 @@
 </div>
 
 <script>
-    const form = document.getElementById('mainForm');
-    form.addEventListener('submit', function(e) {
-        // Проверим, есть ли сообщение об успехе (вставляется только после сохранения)
-        // Мы не можем здесь узнать, были ли ошибки. Но можно подождать ответа сервера.
-        // Чтобы конфетти срабатывало только при успехе, лучше проверять наличие класса .success-message в ответе.
-        // Однако проще: будем запускать анимацию, если форма отправляется без явных ошибок.
-        // Но для 100% точности – после перезагрузки страницы сработает скрипт, если есть .success-message.
+    // tsParticles – звёзды с линиями
+    tsParticles.load({
+        id: "tsparticles",
+        options: {
+            fpsLimit: 60,
+            background: { color: "transparent" },
+            particles: {
+                number: { value: 80, density: { enable: true, area: 800 } },
+                color: { value: ["#ffffff", "#aaccff", "#ffaa88"] },
+                shape: { type: "circle" },
+                opacity: { value: 0.6, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1 } },
+                size: { value: 2, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
+                move: {
+                    enable: true,
+                    speed: 1.5,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    outModes: { default: "out" },
+                },
+                links: {
+                    enable: true,
+                    distance: 150,
+                    color: "#5a7c9e",
+                    opacity: 0.4,
+                    width: 1,
+                },
+                interactivity: {
+                    events: {
+                        onHover: { enable: true, mode: "grab" },
+                        onClick: { enable: false },
+                    },
+                    modes: {
+                        grab: { distance: 140, links: { opacity: 0.8 } },
+                    },
+                },
+            },
+            detectRetina: true,
+        },
     });
 
-    // Если на странице есть .success-message – значит, отправка прошла успешно → конфетти
+    // Конфетти при успешной отправке
     window.addEventListener('load', function() {
         if (document.querySelector('.success-message')) {
             canvasConfetti({
@@ -136,9 +171,8 @@
                 spread: 70,
                 origin: { y: 0.6 },
                 startVelocity: 20,
-                colors: ['#2c3e66', '#5a7c9e', '#ffffff']
+                colors: ['#2c4c8c', '#5a7c9e', '#ffffff']
             });
-            // добавим ещё один взрыв
             setTimeout(() => {
                 canvasConfetti({
                     particleCount: 100,
