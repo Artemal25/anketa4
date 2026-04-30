@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анкета | Лабораторная работа №4</title>
+    <!-- Фавикон -->
+    <link rel="icon" type="image/x-icon" href="free-icon-survey-671902.png">
+    <!-- можно также использовать PNG -->
+    <!-- <link rel="icon" type="image/png" href="favicon.png"> -->
     <link rel="stylesheet" href="style.css">
-    <!-- canvas-confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
-    <!-- tsParticles -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
 <body>
@@ -19,10 +21,14 @@
 
 <div class="container">
     <div class="site-header">
-        <h1>Анкета</h1>
+        <div class="header-left">
+            <!-- Круглое фото -->
+            <img src="image.jpg" alt="User photo" class="profile-photo">
+            <h1>Анкета</h1>
+        </div>
         <div class="nav-links">
             <a href="index.php">Главная</a>
-            
+            <a href="podg.html">Этапы</a>
             <a href="v.php">Просмотр анкет</a>
         </div>
     </div>

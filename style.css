@@ -221,3 +221,48 @@ th {
     text-decoration: none;
     display: inline-block;
 }
+
+/* Добавить в конец файла или заменить весь, но для краткости привожу только изменения */
+
+/* ===== Дополнительные стили для фото в шапке ===== */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;  /* вертикальное выравнивание по центру */
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff, #a0a0a0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.profile-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;   /* превращаем квадрат в круг */
+    object-fit: cover;    /* чтобы фото заполнило круг без искажений */
+    border: 2px solid #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
