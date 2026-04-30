@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анкета | Лабораторная работа №4</title>
     <!-- Фавикон -->
-    <link rel="icon" type="image/x-icon" href="free-icon-survey-671902.png">
+    <link rel="icon" type="image/x-icon" href="free-icon-survey-671902.ico">
     <!-- можно также использовать PNG -->
     <!-- <link rel="icon" type="image/png" href="favicon.png"> -->
     <link rel="stylesheet" href="style.css">

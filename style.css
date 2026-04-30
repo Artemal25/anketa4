@@ -266,3 +266,19 @@ th {
     display: flex;
     gap: 20px;
 }
+
+
+/* Чекбокс – метка и чекбокс в одной строке */
+.checkbox label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: normal;
+    cursor: pointer;
+}
+.checkbox input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #2c4c8c;
+}
