@@ -27,8 +27,65 @@ try {
     <title>Сохранённые анкеты</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        h1 { margin-bottom: 20px; }
-        .back-link { margin-top: 30px; }
+        /* Дополнительные стили для страницы v.php */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 5px;
+        }
+        .anketa-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 900px;
+        }
+        .anketa-table th, .anketa-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3e;
+            vertical-align: top;
+        }
+        .anketa-table th {
+            background: #252530;
+            color: #ffcc88;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .anketa-table tr:hover td {
+            background: rgba(90,124,158,0.2);
+        }
+        .anketa-table td:first-child,
+        .anketa-table th:first-child {
+            padding-left: 15px;
+        }
+        .anketa-table td:last-child,
+        .anketa-table th:last-child {
+            padding-right: 15px;
+        }
+        /* Ограничение ширины для длинных полей */
+        .anketa-table td:nth-child(2) { max-width: 200px; word-break: break-word; } /* ФИО */
+        .anketa-table td:nth-child(3) { max-width: 130px; } /* Телефон */
+        .anketa-table td:nth-child(4) { max-width: 180px; word-break: break-word; } /* Email */
+        .anketa-table td:nth-child(7) { max-width: 250px; word-break: break-word; } /* Языки */
+        .anketa-table td:nth-child(8) { max-width: 300px; word-break: break-word; } /* Биография */
+        @media (max-width: 768px) {
+            .anketa-table {
+                font-size: 0.8rem;
+            }
+            .anketa-table th, .anketa-table td {
+                padding: 8px 5px;
+            }
+        }
+        .badge {
+            display: inline-block;
+            background: #2c5f2d;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -39,42 +96,60 @@ try {
 
 <div class="container">
     <div class="site-header">
-        <h1>Сохранённые анкеты</h1>
+        <div class="header-left">
+            <img src="image.jpg" alt="User photo" class="profile-photo">
+            <h1>Сохранённые анкеты</h1>
+        </div>
         <div class="nav-links">
             <a href="index.php">Форма</a>
-            
         </div>
     </div>
 
-    <p>Всего записей: <?= count($applications) ?></p>
+    <p>Всего записей: <strong><?= count($applications) ?></strong></p>
 
-    <table>
-        <thead>
-            <tr><th>ID</th><th>ФИО</th><th>Телефон</th><th>Email</th><th>Дата рождения</th><th>Пол</th><th>Языки</th><th>Биография</th><th>Дата создания</th></tr>
-        </thead>
-        <tbody>
-        <?php foreach ($applications as $app): ?>
-            <tr>
-                <td><?= htmlspecialchars($app['id']) ?></td>
-                <td><?= htmlspecialchars($app['full_name']) ?></td>
-                <td><?= htmlspecialchars($app['phone']) ?></td>
-                <td><?= htmlspecialchars($app['email']) ?></td>
-                <td><?= htmlspecialchars($app['birth_date']) ?></td>
-                <td><?= $app['gender'] === 'male' ? 'Мужской' : 'Женский' ?></td>
-                <td><?= htmlspecialchars($app['languages']) ?></td>
-                <td><?= nl2br(htmlspecialchars($app['biography'])) ?></td>
-                <td><?= htmlspecialchars($app['created_at']) ?></td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table class="anketa-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ФИО</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Дата рождения</th>
+                    <th>Пол</th>
+                    <th>Языки</th>
+                    <th>Биография</th>
+                    <th>Дата создания</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($applications)): ?>
+                <tr><td colspan="9" style="text-align: center;">Нет сохранённых анкет</td></tr>
+            <?php else: ?>
+                <?php foreach ($applications as $app): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($app['id']) ?></td>
+                        <td><?= htmlspecialchars($app['full_name']) ?></td>
+                        <td><?= htmlspecialchars($app['phone']) ?></td>
+                        <td><?= htmlspecialchars($app['email']) ?></td>
+                        <td><?= htmlspecialchars($app['birth_date']) ?></td>
+                        <td><?= $app['gender'] === 'male' ? 'Мужской' : 'Женский' ?></td>
+                        <td><?= htmlspecialchars($app['languages'] ?: '—') ?></td>
+                        <td><?= nl2br(htmlspecialchars($app['biography'] ?? '')) ?></td>
+                        <td><?= date('d.m.Y H:i', strtotime($app['created_at'])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
     <div class="back-link">
         <a href="index.php">← Вернуться к форме</a>
     </div>
 
     <div class="site-footer">
-        <p>ЛАБОРАТОРНАЯ РАБОТА №4</p>
+        <p>ЛАБОРАТОРНАЯ РАБОТА №3</p>
     </div>
 </div>
 </body>

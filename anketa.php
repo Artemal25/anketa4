@@ -6,6 +6,26 @@
     <title>Анкета | Лабораторная работа №4</title>
     <link rel="icon" type="image/x-icon" href="j.ico">
     <link rel="stylesheet" href="style.css">
+    <style>
+        input.error, select.error, textarea.error {
+            border-color: #ff6666 !important;
+            background-color: rgba(255, 80, 80, 0.1) !important;
+        }
+        .field-error {
+            color: #ffaa66;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 5px;
+        }
+        .success-message, .error-message {
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .success-message { background: #2c5f2d; color: #e6f7e6; }
+        .error-message { background: #5a2e2e; color: #ffb5b5; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
@@ -34,29 +54,27 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <form method="post" action="index.php" id="mainForm">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-
+    <form method="post" action="index.php">
         <div class="form-group">
-            <label>ФИО</label>
+            <label>ФИО *</label>
             <input type="text" name="full_name" value="<?= htmlspecialchars($values['full_name'] ?? '') ?>"
                    <?= !empty($errors['full_name']) ? 'class="error"' : '' ?>>
             <?php if (!empty($errors['full_name'])): ?>
-                <span class="field-error">Некорректное ФИО</span>
+                <span class="field-error">Некорректное ФИО (только буквы и пробелы, макс. 150 символов)</span>
             <?php endif; ?>
         </div>
 
         <div class="form-group">
-            <label>Телефон</label>
+            <label>Телефон *</label>
             <input type="tel" name="phone" value="<?= htmlspecialchars($values['phone'] ?? '') ?>"
                    <?= !empty($errors['phone']) ? 'class="error"' : '' ?>>
             <?php if (!empty($errors['phone'])): ?>
-                <span class="field-error">Некорректный телефон</span>
+                <span class="field-error">Некорректный телефон (6–12 цифр, разрешены +, -, (, ), пробел)</span>
             <?php endif; ?>
         </div>
 
         <div class="form-group">
-            <label>E-mail</label>
+            <label>E-mail *</label>
             <input type="email" name="email" value="<?= htmlspecialchars($values['email'] ?? '') ?>"
                    <?= !empty($errors['email']) ? 'class="error"' : '' ?>>
             <?php if (!empty($errors['email'])): ?>
@@ -65,16 +83,16 @@
         </div>
 
         <div class="form-group">
-            <label>Дата рождения</label>
+            <label>Дата рождения *</label>
             <input type="date" name="birth_date" value="<?= htmlspecialchars($values['birth_date'] ?? '') ?>"
                    <?= !empty($errors['birth_date']) ? 'class="error"' : '' ?>>
             <?php if (!empty($errors['birth_date'])): ?>
-                <span class="field-error">Некорректная дата</span>
+                <span class="field-error">Некорректная дата (ГГГГ-ММ-ДД, не позже сегодня)</span>
             <?php endif; ?>
         </div>
 
         <div class="form-group">
-            <label>Пол</label>
+            <label>Пол *</label>
             <div class="radio-group">
                 <label><input type="radio" name="gender" value="male" <?= ($values['gender'] ?? '') === 'male' ? 'checked' : '' ?>> Мужской</label>
                 <label><input type="radio" name="gender" value="female" <?= ($values['gender'] ?? '') === 'female' ? 'checked' : '' ?>> Женский</label>
@@ -85,8 +103,8 @@
         </div>
 
         <div class="form-group">
-            <label>Любимые языки программирования</label>
-            <select name="languages[]" multiple size="8">
+            <label>Любимые языки программирования *</label>
+            <select name="languages[]" multiple size="8" <?= !empty($errors['languages']) ? 'class="error"' : '' ?>>
                 <?php foreach ($languages_from_db as $lang): ?>
                     <option value="<?= htmlspecialchars($lang) ?>" <?= in_array($lang, $values['languages'] ?? []) ? 'selected' : '' ?>><?= htmlspecialchars($lang) ?></option>
                 <?php endforeach; ?>
@@ -98,16 +116,17 @@
 
         <div class="form-group">
             <label>Биография</label>
-            <textarea name="biography" rows="5"><?= htmlspecialchars($values['biography'] ?? '') ?></textarea>
+            <textarea name="biography" rows="5" <?= !empty($errors['biography']) ? 'class="error"' : '' ?>><?= htmlspecialchars($values['biography'] ?? '') ?></textarea>
             <?php if (!empty($errors['biography'])): ?>
-                <span class="field-error">Биография слишком длинная</span>
+                <span class="field-error">Биография слишком длинная (макс. 10000 символов)</span>
             <?php endif; ?>
         </div>
 
         <div class="form-group checkbox">
             <label>
-                <input type="checkbox" name="contract_accepted" value="1" <?= !empty($values['contract_accepted']) ? 'checked' : '' ?>>
-                Я ознакомлен(а) с контрактом
+                <input type="checkbox" name="contract_accepted" value="1" <?= !empty($values['contract_accepted']) ? 'checked' : '' ?>
+                       <?= !empty($errors['contract_accepted']) ? 'class="error"' : '' ?>>
+                Я ознакомлен(а) с контрактом *
             </label>
             <?php if (!empty($errors['contract_accepted'])): ?>
                 <span class="field-error">Необходимо подтвердить согласие</span>
@@ -123,7 +142,6 @@
 </div>
 
 <script>
-    // tsParticles – звёзды с линиями
     tsParticles.load({
         id: "tsparticles",
         options: {
@@ -164,7 +182,6 @@
         },
     });
 
-    
     window.addEventListener('load', function() {
         if (document.querySelector('.success-message')) {
             canvasConfetti({
@@ -174,20 +191,8 @@
                 startVelocity: 20,
                 colors: ['#2c4c8c', '#5a7c9e', '#ffffff']
             });
-            setTimeout(() => {
-                canvasConfetti({
-                    particleCount: 100,
-                    spread: 100,
-                    origin: { y: 0.5, x: 0.3 },
-                });
-            }, 150);
-            setTimeout(() => {
-                canvasConfetti({
-                    particleCount: 100,
-                    spread: 100,
-                    origin: { y: 0.5, x: 0.7 },
-                });
-            }, 300);
+            setTimeout(() => canvasConfetti({ particleCount: 100, spread: 100, origin: { y: 0.5, x: 0.3 } }), 150);
+            setTimeout(() => canvasConfetti({ particleCount: 100, spread: 100, origin: { y: 0.5, x: 0.7 } }), 300);
         }
     });
 </script>

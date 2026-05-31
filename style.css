@@ -280,3 +280,33 @@ th {
     margin: 0;
     accent-color: #2c4c8c;
 }
+
+
+
+/* Дополнение для подсветки ошибок */
+input.error, select.error, textarea.error {
+    border: 1px solid #ff6666 !important;
+    background-color: rgba(255, 80, 80, 0.1) !important;
+}
+.field-error {
+    color: #ffaa66;
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 5px;
+}
+.success-message {
+    background: #2c5f2d;
+    color: #e6f7e6;
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+.error-message {
+    background: #5a2e2e;
+    color: #ffb5b5;
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+}
